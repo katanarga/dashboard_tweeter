@@ -1,6 +1,7 @@
 import pandas as pd
 import json
 # Lire fichier csv
+df_tweets = pd.read_csv('data/tweets.csv')
 
 filter=['user_name','text','date']
 
@@ -10,7 +11,8 @@ def search_by_id(df_tweets,id):
     id_js=id_data.to_json(orient="index",force_ascii=False)
     return json.loads(id_js)
 
-# print(search_by_id(1080003416573857792))
+# print(search_by_id(df_tweets,1080003416573857792))
+
 # user_id (int)
 def search_by_uid(df_tweets,uid):
     uid_data=df_tweets.loc[df_tweets['user_id']==uid,filter]
