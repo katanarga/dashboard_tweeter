@@ -7,9 +7,9 @@ window.addEventListener("load",function (){
         inQuery = true;
         btn_search.disabled = "disabled";
         let div_tweets = document.getElementById("div_tweets");
-        let res = await Tweets.search(search_bar.value);
+        let resTweets = await Tweets.search(search_bar.value);
         div_tweets.innerHTML="";
-        div_tweets.innerHTML += "user_name: ..."+res; //TODO
+        div_tweets.innerHTML += "res "+resTweets;
         inQuery=false;
         btn_search.disabled = "";
     });

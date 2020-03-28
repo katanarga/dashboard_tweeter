@@ -11,8 +11,10 @@ class Server(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         if self.path=="/":
+            print("root")
             file_name="index.html"
         elif self.path.startswith("/search?text="):
+            print("searching...")
             file_name="index.html"
             text=self.path[13:]
             df_json=search_by_text(self.df_tweets,text)
