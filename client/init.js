@@ -1,14 +1,15 @@
 window.addEventListener("load",function (){
-    let search_bar = this.document.getElementById("search_bar");
-    let btn_search = this.document.getElementById("btn_search");
+    let search_bar = document.getElementById("search_bar");
+    let btn_search = document.getElementById("btn_search");
     let inQuery = false;
 
     btn_search.addEventListener("click",async function (ev) {
         inQuery = true;
         btn_search.disabled = "disabled";
-        let div_tweets = await Tweets.search_by(search_bar.value);
+        let div_tweets = document.getElementById("div_tweets");
+        let res = await Tweets.search(search_bar.value);
         div_tweets.innerHTML="";
-        div_tweets.innerHTML += "user_name: ..."; //TODO
+        div_tweets.innerHTML += "user_name: ..."+res; //TODO
         inQuery=false;
         btn_search.disabled = "";
     });

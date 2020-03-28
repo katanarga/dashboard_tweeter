@@ -6,11 +6,12 @@ function callbackFunc(response) {
 // appel python 
 // TODO: Serveur Python
 // def GET(): return search_by_...
-Tweets.search_by(input) = async function () {
+Tweets.search = async function (str) {
+    console.log("/search?text="+str);
     $.ajax({
-        url : '../query_data.py',
-        type: 'GET',
-        dataType: 'JSON',
+        url : "./search?text="+str,
+        type: "GET",
+        dataType: "JSON",
         data:{
             "user_name": $("user_name").val(),
             "text": $("text").val(),
