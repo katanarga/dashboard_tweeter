@@ -26,35 +26,40 @@ Tweets.ajax = function (method, url) {
 };
 
 Tweets.query = async function (params) {
-    let url = "index.html/search?text="+params;
+    let paramString = "";
+    for (let p in params) {
+        if (params.hasOwnProperty (p)) {
+            paramString += encodeURIComponent(params[p]);
+        };
+    };
+    let url = "/search?text="+paramString;
+    console.log(url);
     let res = await Tweets.ajax("GET", url);
+    console.log(JSON.parse(res));
     return JSON.parse(res);
-}
-
-function callbackFunc(response) {
-    console.log(response);
 }
 
 Tweets.search = async function (str) {
     console.log(str);
-
-    $.ajax({
-        url : "./search?text="+str,
-        type: "GET",
-        dataType: "JSON",
-        data:{
-            "user_name": $("user_name").val(),
-            "text": $("text").val(),
-            "date": $("date").val()
-        },
-        success: function(data){
-            callbackFunc(data.user_name);
-            $('#div_tweets').html(data.result);
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-            alert("HTTP Error "+XMLHttpRequest.status);
-            alert("ready state is "+XMLHttpRequest.readyState);
-            alert("text status is "+textStatus);
-           }
-    });
+    let res = Tweets.query(str);
+    return res;
+    // $.ajax({
+    //     url : "./search?text="+str,
+    //     type: "GET",
+    //     dataType: "JSON",
+    //     data:{
+    //         "user_name": $("user_name").val(),
+    //         "text": $("text").val(),
+    //         "date": $("date").val()
+    //     },
+    //     success: function(data){
+    //         callbackFunc(data.user_name);
+    //         $('#div_tweets').html(data.result);
+    //     },
+    //     error: function(XMLHttpRequest, textStatus, errorThrown) {
+    //         alert("HTTP Error "+XMLHttpRequest.status);
+    //         alert("ready state is "+XMLHttpRequest.readyState);
+    //         alert("text status is "+textStatus);
+    //        }
+    // });
 }
