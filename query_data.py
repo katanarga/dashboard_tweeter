@@ -1,7 +1,7 @@
 import pandas as pd
 import json
-# Lire fichier csv
-df_tweets = pd.read_csv('data/tweets.csv')
+# TEST
+# df_tweets = pd.read_csv('data/tweets.csv')
 
 filter=['user_name','text','date']
 

@@ -1,4 +1,4 @@
-window.addEventListener("load",function (){
+window.addEventListener("load",function () {
     let search_bar = document.getElementById("search_bar");
     let btn_search = document.getElementById("btn_search");
     let inQuery = false;
@@ -13,4 +13,5 @@ window.addEventListener("load",function (){
         inQuery=false;
         btn_search.disabled = "";
     });
-});
+
+})

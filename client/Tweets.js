@@ -35,31 +35,12 @@ Tweets.query = async function (params) {
     let url = "/search?text="+paramString;
     console.log(url);
     let res = await Tweets.ajax("GET", url);
-    console.log(JSON.parse(res));
-    return JSON.parse(res);
+    return res;
 }
 
 Tweets.search = async function (str) {
     console.log(str);
     let res = Tweets.query(str);
+    console.log(res)
     return res;
-    // $.ajax({
-    //     url : "./search?text="+str,
-    //     type: "GET",
-    //     dataType: "JSON",
-    //     data:{
-    //         "user_name": $("user_name").val(),
-    //         "text": $("text").val(),
-    //         "date": $("date").val()
-    //     },
-    //     success: function(data){
-    //         callbackFunc(data.user_name);
-    //         $('#div_tweets').html(data.result);
-    //     },
-    //     error: function(XMLHttpRequest, textStatus, errorThrown) {
-    //         alert("HTTP Error "+XMLHttpRequest.status);
-    //         alert("ready state is "+XMLHttpRequest.readyState);
-    //         alert("text status is "+textStatus);
-    //        }
-    // });
 }
