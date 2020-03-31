@@ -7,6 +7,7 @@ window.addEventListener("load",function () {
         inQuery = true;
         btn_search.disabled = "disabled";
         let div_tweets = document.getElementById("div_tweets");
+        console.log(search_bar.value);
         let resTweets = await Tweets.search(search_bar.value);
         div_tweets.innerHTML="";
         div_tweets.innerHTML += "res "+resTweets;
