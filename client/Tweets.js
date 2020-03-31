@@ -32,7 +32,7 @@ Tweets.query = async function (params) {
             paramString += encodeURIComponent(params[p]);
         };
     };
-    let url = "/search?text="+paramString;
+    let url = "/?text="+paramString;
     console.log(url);
     let res = await Tweets.ajax("GET", url);
     return res;
