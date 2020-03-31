@@ -21,7 +21,7 @@ Tweets.ajax = function (method, url) {
         xhr.setRequestHeader( 'Api-User-Agent', 'M1Info/1.0' ); //spécifique à Wikimedia
 
         /* on envoie la requête */
-         xhr.send();
+        xhr.send();
     })
 };
 
@@ -33,13 +33,13 @@ Tweets.query = async function (params) {
         };
     };
     let url = "/search?text="+paramString;
-    console.log(url);
+    console.log("url:",url);
     let res = await Tweets.ajax("GET", url);
     return JSON.parse(res);
 }
 
 Tweets.search = async function (str) {
-    console.log("search",str);
+    console.log("Tweets.search",str);
     let res = Tweets.query(str);
     console.log(res)
     return res;
