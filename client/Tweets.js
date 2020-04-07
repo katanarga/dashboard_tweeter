@@ -13,13 +13,10 @@ Tweets.ajax = function (method, url) {
                     reject(this.status + " : " + this.responseText);
             }
         });
-
         /* on commence la requête HTTP */
         xhr.open(method, url);
         /* on définit quelques en-têtes */
-        xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8"); // type de retour
-        xhr.setRequestHeader( 'Api-User-Agent', 'M1Info/1.0' ); //spécifique à Wikimedia
-
+        xhr.setRequestHeader("Content-Type", "application/json"); // type de retour
         /* on envoie la requête */
         xhr.send();
     })
@@ -32,9 +29,10 @@ Tweets.query = async function (params) {
             paramString += encodeURIComponent(params[p]);
         };
     };
-    let url = "/search?text="+paramString;
+    let url = "http://localhost:8000/?text="+paramString;
     console.log("url:",url);
     let res = await Tweets.ajax("GET", url);
+    console.log("res:",res);
     return JSON.parse(res);
 }
 

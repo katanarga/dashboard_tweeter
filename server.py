@@ -16,13 +16,18 @@ class Server(SimpleHTTPRequestHandler):
             file_name="init.js"
         elif self.path=="/Tweets.js":
             file_name="Tweets.js"
-        elif self.path.startswith("/search?text="):
+        elif self.path.startswith("/?text="):
             file_name="index.html"
             text=self.path[13:]
             df_json=search_by_text(self.df_tweets,text)
-            print(f"text {text} dfjson {df_json} {type(df_json)}")
-            # self.wfile.write(df_json)
-            return df_json
+            self.send_response(200)
+            self.send_header("Content-type","application/json")
+            self.end_headers()
+            with open("test.json","w") as f:
+                f.write(json.dumps(df_json))
+            with open("test.json","rb") as f:
+                self.wfile.write(f.read())
+            return None
         else:
             file_name="error.html"
         f=open(f"{self.folder_client}/{file_name}","rb")
