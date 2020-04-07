@@ -5,7 +5,7 @@ from query_data import *
 class Server(SimpleHTTPRequestHandler):
     
     def __init__(self,request,client_adress,server):
-        self.df_tweets = pd.read_csv('data/tweets.csv')
+        self.df_tweets = pd.read_csv('data/tweets.csv', encoding='utf8')
         self.folder_client="client"
         super().__init__(request,client_adress,server)
 

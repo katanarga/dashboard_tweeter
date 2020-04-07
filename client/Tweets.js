@@ -30,15 +30,11 @@ Tweets.query = async function (params) {
         };
     };
     let url = "http://localhost:8000/?text="+paramString;
-    console.log("url:",url);
     let res = await Tweets.ajax("GET", url);
-    console.log("res:",res);
     return JSON.parse(res);
 }
 
 Tweets.search = async function (str) {
-    console.log("Tweets.search",str);
     let res = Tweets.query(str);
-    console.log(res)
     return res;
 }

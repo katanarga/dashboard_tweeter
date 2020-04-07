@@ -1,8 +1,7 @@
 import pandas as pd
 import json
 # TEST
-# df_tweets = pd.read_csv('data/tweets.csv')
-
+df_tweets = pd.read_csv('data/tweets.csv', encoding='utf8')
 filter=['user_name','text','date']
 
 # id(int)
@@ -27,9 +26,11 @@ def search_by_uname(df_tweets,uname):
 
 # texte (str)
 def search_by_text(df_tweets,text):
-    text_data=df_tweets.loc[df_tweets['text'].astype(str).str.contains(text),filter]
+    text_data=df_tweets.loc[df_tweets['text'].astype(str).str.contains(text),filter].reset_index(drop=True)
     text_js=text_data.to_json(orient="index",force_ascii=False)
     return text_js
+
+# print(search_by_text(df_tweets,"日野"))
 
 # print(search_by_text("happy"))
 
