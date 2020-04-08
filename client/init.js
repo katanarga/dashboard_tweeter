@@ -10,11 +10,10 @@ window.addEventListener("load",function () {
         console.log("init search value",search_bar.value);
         let resTweets = await Tweets.search(search_bar.value);
         div_tweets.innerHTML="";
-        var tts = JSON.parse(resTweets);
 
         for (var p in tts) {
-            // div_tweets.innerHTML += "<p id='user_name'>"+tts[p].user_name+"</p><p id='text'>"
-            // +tts[p].text+"</p><p id='date'>"+tts[p].date+"</p>";
+        //     // div_tweets.innerHTML += "<p id='user_name'>"+tts[p].user_name+"</p><p id='text'>"
+        //     // +tts[p].text+"</p><p id='date'>"+tts[p].date+"</p>";
             console.log("user:\n",tts[p].user_name);
         }
 
