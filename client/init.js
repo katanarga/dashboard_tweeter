@@ -7,20 +7,16 @@ window.addEventListener("load",function () {
         inQuery = true;
         btn_search.disabled = "disabled";
         let div_tweets = document.getElementById("div_tweets");
-        console.log("init search value",search_bar.value);
         let resTweets = await Tweets.search(search_bar.value);
-        div_tweets.innerHTML="";
-        var tts = JSON.parse(resTweets);
-
-        for (var p in tts) {
-            // div_tweets.innerHTML += "<p id='user_name'>"+tts[p].user_name+"</p><p id='text'>"
-            // +tts[p].text+"</p><p id='date'>"+tts[p].date+"</p>";
-            console.log("user:\n",tts[p].user_name);
+        let tts = JSON.parse(resTweets);
+        let div_content="";
+        for (var p in tts){
+            date=tts[p].date.replace("T"," ");
+            date=date.substr(0,19);
+            div_content+= "<div><p><b>"+tts[p].user_name+" | "+date+"</b></p><p>"+tts[p].text+"</p></div><hr/>";
         }
-
-        div_tweets.innerHTML += resTweets;
+        div_tweets.innerHTML=div_content;
         inQuery=false;
         btn_search.disabled = "";
     });
-
 })

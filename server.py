@@ -18,14 +18,14 @@ class Server(SimpleHTTPRequestHandler):
             file_name="Tweets.js"
         elif self.path.startswith("/?text="):
             file_name="index.html"
-            text=self.path[13:]
+            text=self.path[7:]
             df_json=search_by_text(self.df_tweets,text)
             self.send_response(200)
             self.send_header("Content-type","application/json")
             self.end_headers()
-            with open("test.json","w") as f:
+            with open("response.json","w") as f:
                 f.write(json.dumps(df_json))
-            with open("test.json","rb") as f:
+            with open("response.json","rb") as f:
                 self.wfile.write(f.read())
             return None
         else:
