@@ -2,7 +2,7 @@ import pandas as pd
 import json
 # TEST
 # df_tweets = pd.read_csv('data/tweets.csv', encoding='utf8')
-filter=['user_name','text','date','place_name']
+filter=['user_name','text','date','place_name','hashtag_0','hashtag_1','hashtag_2']
 
 # id(int)
 def search_by_id(df_tweets,id):
