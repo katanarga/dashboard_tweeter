@@ -1,6 +1,8 @@
 window.addEventListener("load",function () {
     let search_bar = document.getElementById("search_bar");
     let btn_search = document.getElementById("btn_search");
+    let div_hashtag = document.getElementById("div_hashtag");
+    let style_div = document.getElementById("style_div");
     let inQuery = false;
 
     btn_search.addEventListener("click",async function (ev) {
@@ -38,10 +40,12 @@ window.addEventListener("load",function () {
                 map_places.set(place_name,1);
             }
         }
+        create_pie_chart_hashtags(map_hashtags);
         let table_places=create_histogram_country(map_places);
-        let h3_nb_tweets="<h3>Nombre de tweets contenant la chaine '"+search_bar.value+"' : "+nb_tweets+"</h3>";
-        let h3_places="<h3>Répartition par pays :</h3>";
-        div_tweets.innerHTML=h3_nb_tweets+h3_places+table_places+div_content;
+        let text_nb_tweets="<h2 style='color:white'>Nombre de tweets contenant la chaine '"+search_bar.value+"' : "+nb_tweets+"</h2>";
+        let text_hashtags="<h3>Proportion des hashtags</h3>";
+        let text_places="<h3>Répartition par pays :</h3>";
+        div_tweets.innerHTML=text_nb_tweets+text_hashtags+text_places+table_places+div_content;
         inQuery=false;
         btn_search.disabled = "";
     });
@@ -94,4 +98,86 @@ function create_histogram_country(map_places){
         table_places+="</tr></table>";
     }
     return table_places;
+}
+
+function create_pie_chart_hashtags(map_hashtags){
+    let nb_type_hashtags=map_hashtags.size;
+    let nb_total_hashtags=0;
+    for(let [k,v] of map_hashtags){
+        nb_total_hashtags+=v;
+    }
+    console.log(map_hashtags);
+    console.log("X "+nb_total_hashtags);
+    let pie_chart="<div class='pieContainer'>";
+    for(let i=0;i<nb_type_hashtags;i++){
+        pie_chart+="<div id='pieSlice"+(i+1)+"' class='hold'><div class='pie'></div></div>";
+    }
+    pie_chart+="</div>";
+    let style="<style type='text/css'>"+
+    ".pieContainer{"+
+    "height: 150px;"+
+    "position: relative;"+
+    "}"+   
+    ".pie{"+
+        "transition: all 1s;"+
+        "position: absolute;"+
+        "width: 150px;"+
+        "height: 150px;"+
+        "border-radius: 100%;"+
+        "clip: rect(0px, 75px, 150px, 0px);"+
+    "}"+
+    ".hold{"+
+        "position: absolute;"+
+        "width: 150px;"+
+        "height: 150px;"+
+        "border-radius: 100%;"+
+        "clip: rect(0px, 150px, 150px, 75px);"+
+    "}";
+    let i=1;
+    let old1=0;
+    let color="";
+    let colors=[];
+    let table_color_hashtags="<table><tr>";
+    for(let [k,v] of map_hashtags){
+        color=getRandomRgb();
+        colors.push(color);
+        table_color_hashtags+="<td style='width:5%'><b>"+k+" ("+(v/nb_total_hashtags*360).toFixed(2)+"%)</b></td>";
+        if(i==1){
+            old1=v/nb_total_hashtags*360;
+            style+="\n #pieSlice1 .pie{"+
+                "background-color: "+color+";"+
+                "transform:rotate("+old1+"deg);"+
+            "}";
+        }
+        else{
+            style+="\n #pieSlice"+i+"{"+
+                "transform: rotate("+old1+"deg);"+
+            "}\n"+
+            "#pieSlice"+i+" .pie {"+
+                "background-color: "+color+";"+
+                "transform: rotate("+v/nb_total_hashtags*360+"deg);"+
+            "}\n";
+            old1+=v/nb_total_hashtags*360;
+        }
+        if(i%20==0){
+            table_color_hashtags+="</tr><tr>";
+            for(let j=i-19;j<=i;j++){
+                table_color_hashtags+="<td style='background-color:"+colors[j]+"';width:5%><br></td>";
+            }
+            table_color_hashtags+="<tr>";
+        }
+        i++;
+    }
+    style+="</style>";
+    style_div.innerHTML=style;
+    table_color_hashtags+="</tr></table>";
+    div_hashtag.innerHTML=pie_chart+table_color_hashtags;
+}
+
+function getRandomRgb() {
+    var num = Math.round(0xffffff * Math.random());
+    var r = num >> 16;
+    var g = num >> 8 & 255;
+    var b = num & 255;
+    return 'rgb(' + r + ', ' + g + ', ' + b + ')';
 }
