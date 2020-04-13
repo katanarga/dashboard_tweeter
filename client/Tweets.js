@@ -13,11 +13,8 @@ Tweets.ajax = function (method, url) {
                     reject(this.status + " : " + this.responseText);
             }
         });
-        /* on commence la requête HTTP */
         xhr.open(method, url);
-        /* on définit quelques en-têtes */
-        xhr.setRequestHeader("Content-Type", "application/json"); // type de retour
-        /* on envoie la requête */
+        xhr.setRequestHeader("Content-Type", "application/json");
         xhr.send();
     })
 };
