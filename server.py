@@ -1,9 +1,15 @@
 from http.server import SimpleHTTPRequestHandler
 from http.server import socketserver
 from query_data import *
+import os,sys
 
 class Server(SimpleHTTPRequestHandler):
-    
+    # Class-wide value for socket timeout
+    timeout = 3 * 60
+    def setup(self):
+        self.request.settimeout(self.timeout)
+        SimpleHTTPRequestHandler.setup(self)
+
     def __init__(self,request,client_adress,server):
         self.df_tweets = pd.read_csv('data/tweets.csv', encoding='utf8')
         self.folder_client="client"
@@ -41,6 +47,14 @@ class Server(SimpleHTTPRequestHandler):
         f.close()
 
 if __name__=="__main__":
-    PORT=8000
-    httpd=socketserver.TCPServer(("",PORT),Server)
-    httpd.serve_forever()
+    try:
+        PORT=8000
+        httpd=socketserver.TCPServer(("",PORT),Server)
+        print("Server running.")
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        print("Keyboard Interrupted. Server Shutdown.")
+        try:
+            sys.exit(0)
+        except SystemExit:
+            os._exit(0)
