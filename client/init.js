@@ -115,33 +115,29 @@ function create_pie_chart_hashtags(map_hashtags){
     pie_chart+="</div>";
     let style="<style type='text/css'>"+
     ".pieContainer{"+
-    "height: 150px;"+
+    "height: 300px;"+
     "position: relative;"+
     "}"+   
     ".pie{"+
         "transition: all 1s;"+
         "position: absolute;"+
-        "width: 150px;"+
-        "height: 150px;"+
+        "width: 300px;"+
+        "height: 300px;"+
         "border-radius: 100%;"+
-        "clip: rect(0px, 75px, 150px, 0px);"+
+        "clip: rect(0px, 150px, 300px, 0px);"+
     "}"+
     ".hold{"+
         "position: absolute;"+
-        "width: 150px;"+
-        "height: 150px;"+
+        "width: 300px;"+
+        "height: 300px;"+
         "border-radius: 100%;"+
-        "clip: rect(0px, 150px, 150px, 75px);"+
+        "clip: rect(0px, 300px, 300px, 150px);"+
     "}";
     let i=1;
     let old1=0;
     let color="";
-    let colors=[];
-    let table_color_hashtags="<table><tr>";
     for(let [k,v] of map_hashtags){
         color=getRandomRgb();
-        colors.push(color);
-        table_color_hashtags+="<td style='width:5%'><b>"+k+" ("+(v/nb_total_hashtags*360).toFixed(2)+"%)</b></td>";
         if(i==1){
             old1=v/nb_total_hashtags*360;
             style+="\n #pieSlice1 .pie{"+
@@ -159,19 +155,23 @@ function create_pie_chart_hashtags(map_hashtags){
             "}\n";
             old1+=v/nb_total_hashtags*360;
         }
-        if(i%20==0){
-            table_color_hashtags+="</tr><tr>";
-            for(let j=i-19;j<=i;j++){
-                table_color_hashtags+="<td style='background-color:"+colors[j]+"';width:5%><br></td>";
-            }
-            table_color_hashtags+="<tr>";
-        }
         i++;
     }
     style+="</style>";
     style_div.innerHTML=style;
-    table_color_hashtags+="</tr></table>";
-    div_hashtag.innerHTML=pie_chart+table_color_hashtags;
+    let text_current_slice="<h3 id='current_slice'></h3>";
+    div_hashtag.innerHTML=pie_chart+text_current_slice;
+    let current_slice=0;
+    let y=1;
+    text_current_slice=document.getElementById("current_slice");
+    for(let [k,v] of map_hashtags){
+        console.log("hash "+k);
+        current_slice=document.getElementById("pieSlice"+y);
+        current_slice.onmouseover=function(){
+            text_current_slice.innerHTML=k+" ("+(v/nb_total_hashtags).toFixed(2)*100+"%)";
+        };
+        y++;
+    }
 }
 
 function getRandomRgb() {
