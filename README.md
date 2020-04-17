@@ -3,7 +3,7 @@ contenant des tweets. L'application a été développée en python et en javascr
 
 ## Installation
 
-1. Clonez le dépot avec la commande __git clone__ .
+1. Clonez le dépot avec la commande __git clone https://github.com/katanarga/dashboard_tweeter.git__ .
 
 2. Dans le dossier dashboard_tweeter, construisez l'image Docker avec la commande __docker build -t dashboard_tweeter .__
 
