@@ -1,25 +1,27 @@
 window.addEventListener("load",function () {
     let search_bar = document.getElementById("search_bar");
     let btn_search = document.getElementById("btn_search");
-    let div_hashtag = document.getElementById("div_hashtag");
-    let style_div = document.getElementById("style_div");
+    let div_results = document.getElementById("div_results");
     let inQuery = false;
+    let interval=[];
 
     btn_search.addEventListener("click",async function (ev) {
+        if(interval.length>0){
+            clearInterval(interval.pop());
+        }
         inQuery = true;
         btn_search.disabled = "disabled";
-        let div_tweets = document.getElementById("div_tweets");
         let resTweets = await Tweets.search(search_bar.value);
         let tts = JSON.parse(resTweets);
         let nb_tweets=0;
-        let div_content="";
+        let div_content="<div style='clear:both'>";
         let map_places=new Map();
         let map_hashtags=new Map();
         for(var p in tts){
             nb_tweets++;
             date=tts[p].date.replace("T"," ");
             date=date.substr(0,19);
-            div_content+= "<div><p><b>"+tts[p].user_name+" | "+date+"</b></p><p>"+tts[p].text+"</p></div><hr/>";
+            div_content+= "<p><b>"+tts[p].user_name+" | "+date+"</b></p><p>"+tts[p].text+"</p><hr/>";
             hashtags=[tts[p].hashtag_0,tts[p].hashtag_1,tts[p].hashtag_2];
             for(let i=0;i<3;i++){
                 h=hashtags[i];
@@ -40,15 +42,45 @@ window.addEventListener("load",function () {
                 map_places.set(place_name,1);
             }
         }
-        create_pie_chart_hashtags(map_hashtags);
+        div_content+="</div>";
+        text_nb_tweets="<h2>Nombre de tweets contenant la chaine '"+search_bar.value+
+            "' : <span id='nb_tweets' style='font-size:800%;color:white'>0</span></h2>";
+        let pie_chart_and_table_hashtags=create_pie_chart_hashtags(map_hashtags);
         let table_places=create_histogram_country(map_places);
-        let text_nb_tweets="<h2 style='color:white'>Nombre de tweets contenant la chaine '"+search_bar.value+"' : "+nb_tweets+"</h2>";
-        let text_hashtags="<h3>Proportion des hashtags</h3>";
-        let text_places="<h3>Répartition par pays :</h3>";
-        div_tweets.innerHTML=text_nb_tweets+text_hashtags+text_places+table_places+div_content;
+        let text_hashtags="<h2>Répartition des hashtags (les hashtags sont affichés dans le sens des aiguilles d'une montre):</h2>";
+        let text_places="<h2 style='clear:both'>Répartition par pays :</h2>";
+        let text_tweets="<h2 style='clear:both'>Tweets :</h2>";
+        div_results.innerHTML=text_nb_tweets+text_hashtags+pie_chart_and_table_hashtags+text_places+table_places+text_tweets+div_content;
         inQuery=false;
         btn_search.disabled = "";
+        text_nb_tweets=document.getElementById("nb_tweets");
+        refresh_text_nb_tweets(nb_tweets);
     });
+
+    function blink_nb_tweets(){ 
+        if (text_nb_tweets.style.visibility=='visible'){ 
+            text_nb_tweets.style.visibility='hidden'; 
+        } 
+        else{ 
+            text_nb_tweets.style.visibility='visible'; 
+        }
+     }; 
+    
+    function refresh_text_nb_tweets(nb_tweets){
+        let x=0;
+        let f=function(){
+            text_nb_tweets.innerHTML=x;
+            if(x<nb_tweets){
+                x++;
+                setTimeout(f,4000/nb_tweets);
+            }
+            else{
+                interval.push(setInterval(blink_nb_tweets,800)); 
+            }
+        };
+        setTimeout(f,4000/nb_tweets);
+    }
+
 })
 
 function create_histogram_country(map_places){
@@ -58,7 +90,7 @@ function create_histogram_country(map_places){
         let i=nb_places;
         let j=nb_places;
         let x=0;
-        table_places+="<table><tr>";
+        table_places+="<table style='clear:both'><tr>";
         for(let [key,value] of map_places){
             if(x<nb_places){
                 x++;
@@ -100,78 +132,62 @@ function create_histogram_country(map_places){
     return table_places;
 }
 
+
 function create_pie_chart_hashtags(map_hashtags){
-    let nb_type_hashtags=map_hashtags.size;
     let nb_total_hashtags=0;
     for(let [k,v] of map_hashtags){
         nb_total_hashtags+=v;
     }
-    console.log(map_hashtags);
-    console.log("X "+nb_total_hashtags);
-    let pie_chart="<div class='pieContainer'>";
-    for(let i=0;i<nb_type_hashtags;i++){
-        pie_chart+="<div id='pieSlice"+(i+1)+"' class='hold'><div class='pie'></div></div>";
-    }
-    pie_chart+="</div>";
-    let style="<style type='text/css'>"+
-    ".pieContainer{"+
-    "height: 300px;"+
-    "position: relative;"+
-    "}"+   
-    ".pie{"+
-        "transition: all 1s;"+
-        "position: absolute;"+
-        "width: 300px;"+
-        "height: 300px;"+
-        "border-radius: 100%;"+
-        "clip: rect(0px, 150px, 300px, 0px);"+
-    "}"+
-    ".hold{"+
-        "position: absolute;"+
-        "width: 300px;"+
-        "height: 300px;"+
-        "border-radius: 100%;"+
-        "clip: rect(0px, 300px, 300px, 150px);"+
-    "}";
+    let style_pie_chart="<style type='text/css'>\n"+
+    "#pieChart{\n"+
+        "margin : auto;"+
+        "border-radius: 50%;"+
+        "width: 400px;"+
+        "height: 400px;"+
+        "background:"+ 
+          "conic-gradient("
+    ;
     let i=1;
-    let old1=0;
     let color="";
+    let colors=[];
+    let sum_percent=0;
+    let current_percent=0;
+    let table_color_hashtags="<table><tr>";
     for(let [k,v] of map_hashtags){
+        current_percent=v/nb_total_hashtags*100;
         color=getRandomRgb();
+        colors.push(color);
+        table_color_hashtags+="<td><b>"+k+" ("+current_percent.toFixed(2)+"%)</b></td>";
+        sum_percent+=current_percent;
         if(i==1){
-            old1=v/nb_total_hashtags*360;
-            style+="\n #pieSlice1 .pie{"+
-                "background-color: "+color+";"+
-                "transform:rotate("+old1+"deg);"+
-            "}";
+            style_pie_chart+=color+" "+sum_percent+"%,";
+        }
+        else if(i!=map_hashtags.size){
+            style_pie_chart+=color+" 0 "+sum_percent+"%,";
         }
         else{
-            style+="\n #pieSlice"+i+"{"+
-                "transform: rotate("+old1+"deg);"+
-            "}\n"+
-            "#pieSlice"+i+" .pie {"+
-                "background-color: "+color+";"+
-                "transform: rotate("+v/nb_total_hashtags*360+"deg);"+
-            "}\n";
-            old1+=v/nb_total_hashtags*360;
+            style_pie_chart+=color+" 0 );}";
+        }
+        if(i%10==0){
+            table_color_hashtags+="</tr><tr>";
+            for(let j=i-10;j<=i;j++){
+                table_color_hashtags+="<td style='background-color:"+colors[j]+"'><br></td>";
+            }
+            table_color_hashtags+="<tr>";
         }
         i++;
     }
-    style+="</style>";
-    style_div.innerHTML=style;
-    let text_current_slice="<h3 id='current_slice'></h3>";
-    div_hashtag.innerHTML=pie_chart+text_current_slice;
-    let current_slice=0;
-    let y=1;
-    text_current_slice=document.getElementById("current_slice");
-    for(let [k,v] of map_hashtags){
-        console.log("hash "+k);
-        current_slice=document.getElementById("pieSlice"+y);
-        current_slice.onmouseover=function(){
-            text_current_slice.innerHTML=k+" ("+(v/nb_total_hashtags).toFixed(2)*100+"%)";
-        };
-        y++;
+    i=i-1;
+    if(i%10!=0){
+        table_color_hashtags+="<tr>";
+            for(let j=i-i%10+1;j<=i;j++){
+                table_color_hashtags+="<td style='background-color:"+colors[j-1]+"';width:10%><br></td>";
+            }
+            table_color_hashtags+="</tr><tr>";
     }
+    style_pie_chart+="</style>";
+    table_color_hashtags+="</tr></table>";
+    return style_pie_chart+"<div id='pieChart'></div>"+table_color_hashtags;
 }
 
 function getRandomRgb() {
