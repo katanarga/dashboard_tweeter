@@ -1,7 +1,10 @@
 Ce projet universitaire consiste à développer un dashboard à partir d'un fichier CSV
-contenant des tweets. L'application a été développée en python et en javascript.
+contenant des tweets. L'application a été développée en python et en javascript et est conteneurisée avec Docker.
 
 ## Installation
+
+### Pré-requis
+Installez Docker sur votre machine.
 
 1. Clonez le dépot avec la commande __git clone https://github.com/katanarga/dashboard_tweeter.git__ .
 
