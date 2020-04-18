@@ -2,16 +2,14 @@ FROM python:3
 
 RUN pip install --upgrade pip pandas
 
-RUN mkdir /script
+RUN mkdir /app
 
-COPY server.py /script/
+COPY server /app/server
 
-COPY query_data.py /script/
+COPY client /app/client
 
-COPY client /script/client
+COPY data /app/data
 
-COPY data /script/data
+WORKDIR /app/server
 
-WORKDIR /script
-
-CMD ["python3","./server.py"]
+CMD ["python3","server.py"]
