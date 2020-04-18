@@ -1,12 +1,14 @@
 from http.server import SimpleHTTPRequestHandler
 from http.server import socketserver
-from query_data import *
+import pandas as pd
+import json
 
 class Server(SimpleHTTPRequestHandler):
     
     def __init__(self,request,client_adress,server):
-        self.df_tweets = pd.read_csv('data/tweets.csv', encoding='utf8')
-        self.folder_client="client"
+        self.df_tweets = pd.read_csv('../data/tweets.csv',encoding='utf8')
+        self.folder_client="../client"
+        self.filter=['user_name','text','date','place_name','hashtag_0','hashtag_1','hashtag_2']
         super().__init__(request,client_adress,server)
 
     def do_GET(self):
@@ -14,12 +16,14 @@ class Server(SimpleHTTPRequestHandler):
             file_name="index.html"
         elif self.path=="/init.js":
             file_name="init.js"
-        elif self.path=="/Tweets.js":
-            file_name="Tweets.js"
+        elif self.path=="/charts.js":
+            file_name="charts.js"
+        elif self.path=="/ajax.js":
+            file_name="ajax.js"
         elif self.path.startswith("/?text="):
             file_name="index.html"
             text=self.path[7:]
-            df_json=search_by_text(self.df_tweets,text)
+            df_json=self.search_tweets_by_text(text)
             self.send_response(200)
             self.send_header("Content-type","application/json")
             self.end_headers()
@@ -39,6 +43,11 @@ class Server(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(f.read())
         f.close()
+
+    def search_tweets_by_text(self,text):
+        text_data=self.df_tweets.loc[self.df_tweets['text'].astype(str).str.contains(text),self.filter].reset_index(drop=True)
+        text_js=text_data.to_json(orient="index",force_ascii=False)
+        return text_js
 
 if __name__=="__main__":
     PORT=8000
