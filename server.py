@@ -1,7 +1,12 @@
-from http.server import SimpleHTTPRequestHandler
-from http.server import socketserver
+from http.server import SimpleHTTPRequestHandler, HTTPServer, socketserver
+from socketserver import ThreadingMixIn
 from query_data import *
+from socket import *
+import threading
 import os,sys
+
+class ThreadingServer(ThreadingMixIn, HTTPServer):
+    pass
 
 class Server(SimpleHTTPRequestHandler):
     # Class-wide value for socket timeout
@@ -50,7 +55,7 @@ class Server(SimpleHTTPRequestHandler):
 if __name__=="__main__":
     try:
         PORT=8000
-        httpd=socketserver.TCPServer(("",PORT),Server)
+        httpd=ThreadingServer(("",PORT),Server)
         print("Server running...")
         httpd.serve_forever()
     except KeyboardInterrupt:
