@@ -14,7 +14,7 @@ window.addEventListener("load",function () {
         let resTweets = await Tweets.search(search_bar.value);
         let tts = JSON.parse(resTweets);
         let nb_tweets=0;
-        let div_content="<div style='clear:both'>";
+        let div_content="<div style='clear:both;background-color:white'>";
         let map_places=new Map();
         let map_hashtags=new Map();
         for(var p in tts){
@@ -48,9 +48,29 @@ window.addEventListener("load",function () {
         let pie_chart_and_table_hashtags=create_pie_chart_hashtags(map_hashtags);
         let table_places=create_histogram_country(map_places);
         let text_hashtags="<h2>Répartition des hashtags (les hashtags sont affichés dans le sens des aiguilles d'une montre):</h2>";
+        let div_top_hashtags="<div style='display:inline-block;float:left;'><h3>Top 5 des hashtags :</h3>";
+        let nb_top_tweets = map_hashtags.size<=5 ? map_hashtags.size : 5;
+        let m=0;
+        for(let g=1;g<=nb_top_tweets;g++){
+            m=Math.max(...map_hashtags.values());
+            for(let [k,v] of map_hashtags){
+                if(v==m){
+                    map_hashtags.delete(k);
+                    div_top_hashtags+="<p><b>"+g+" - #"+k+" ("+v+" tweets)</b></p>";
+                    break;
+                }
+            }
+        }
+        div_top_hashtags+="</div>";
         let text_places="<h2 style='clear:both'>Répartition par pays :</h2>";
         let text_tweets="<h2 style='clear:both'>Tweets :</h2>";
-        div_results.innerHTML=text_nb_tweets+text_hashtags+pie_chart_and_table_hashtags+text_places+table_places+text_tweets+div_content;
+        if(nb_tweets==0){
+            div_results.innerHTML=text_nb_tweets;
+        }
+        else{
+            div_results.innerHTML=text_nb_tweets+text_hashtags+div_top_hashtags+
+            pie_chart_and_table_hashtags+text_places+table_places+text_tweets+div_content;
+        }
         inQuery=false;
         btn_search.disabled = "";
         text_nb_tweets=document.getElementById("nb_tweets");
