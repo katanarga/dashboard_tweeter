@@ -5,9 +5,6 @@ from socket import *
 import threading
 import os,sys
 
-class ThreadingServer(ThreadingMixIn, HTTPServer):
-    pass
-
 class Server(SimpleHTTPRequestHandler):
     # Class-wide value for socket timeout
     timeout = 3 * 60
@@ -49,13 +46,18 @@ class Server(SimpleHTTPRequestHandler):
         else:
             self.send_header('Content-type',"text/html")        
         self.end_headers()
+        message = threading.currentThread().getName()
         self.wfile.write(f.read())
+        print(message)
         f.close()
+
+class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
+    """Handle requests in a separate thread."""
 
 if __name__=="__main__":
     try:
         PORT=8000
-        httpd=ThreadingServer(("",PORT),Server)
+        httpd=ThreadedHTTPServer(("",PORT),Server)
         print("Server running...")
         httpd.serve_forever()
     except KeyboardInterrupt:
