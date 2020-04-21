@@ -6,8 +6,8 @@ import threading
 import os,sys
 
 class Server(SimpleHTTPRequestHandler):
-    # Class-wide value for socket timeout
-    timeout = 3 * 60
+    # Class-wide value for timeout
+    timeout = 60
 
     def setup(self):
         self.request.settimeout(self.timeout)
@@ -58,8 +58,9 @@ if __name__=="__main__":
     try:
         PORT=8000
         httpd=ThreadedHTTPServer(("",PORT),Server)
-        print("Server running...")
-        httpd.serve_forever()
+        while 1:
+            httpd.handle_request()
+
     except KeyboardInterrupt:
         print("Keyboard Interrupted. Server shutdown.")
         try:
