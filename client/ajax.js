@@ -35,3 +35,21 @@ Tweets.search = async function (str) {
     let res = Tweets.query(str);
     return res;
 }
+
+Tweets.query_name = async function (params) {
+    let paramString = "";
+    for (let p in params) {
+        if (params.hasOwnProperty (p)) {
+            paramString += encodeURIComponent(params[p]);
+        };
+    };
+    let url = "http://localhost:8000/?name="+paramString;
+    let res = await Tweets.ajax("GET", url);
+    return JSON.parse(res);
+}
+
+Tweets.search_name = async function (str) {
+    let res = Tweets.query_name(str);
+    console.log(res)
+    return res;
+}
