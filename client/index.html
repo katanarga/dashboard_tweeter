@@ -12,12 +12,11 @@
             <h1 style="color:white">Dashboard Twitter</h1>
             <input type="text" id="search_bar">
             <button id="btn_search" style="background-color:orange;color:white">Rechercher</button>
-
-        </div>
-        <div style="text-align: center;">
-            <p>Recherche Avancée</p>
-            <input type="text" id="search_name">
-            <button id="btn_name" style="background-color:orange;color:white">Recherche par user_name</button>
+            <h3>Critère de recherche :</h3>
+            <input type="radio" id="radio_text" name="critere" value="text" checked>
+            <label for="text">Texte</label><br>
+            <input type="radio" id="radio_user_name" name="critere" value="user_name">
+            <label for="user_name">Nom d'utilisateur</label><br>
         </div>
         <div id="div_results"></div>
     </body>

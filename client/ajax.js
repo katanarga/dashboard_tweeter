@@ -4,9 +4,8 @@ Tweets.ajax = function (method, url) {
 
     return new Promise ((resolve, reject) => {
         let xhr = new XMLHttpRequest();
-        xhr.addEventListener("readystatechange",  function () {
-            /* quand la requête change à l'état 'terminé' */
-            if (this.readyState == 4) {
+        xhr.addEventListener("readystatechange",function(){
+            if(this.readyState == 4){
                 if (this.status == 200)
                     resolve(this.responseText);
                 else
@@ -50,6 +49,5 @@ Tweets.query_name = async function (params) {
 
 Tweets.search_name = async function (str) {
     let res = Tweets.query_name(str);
-    console.log(res)
     return res;
 }
