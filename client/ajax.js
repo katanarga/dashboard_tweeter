@@ -25,7 +25,7 @@ Tweets.query = async function (params) {
             paramString += encodeURIComponent(params[p]);
         };
     };
-    let url = "http://localhost:8000/?text="+paramString;
+    let url = "http://localhost:"+port+"/?text="+paramString;
     let res = await Tweets.ajax("GET", url);
     return JSON.parse(res);
 }
@@ -42,7 +42,7 @@ Tweets.query_name = async function (params) {
             paramString += encodeURIComponent(params[p]);
         };
     };
-    let url = "http://localhost:8000/?name="+paramString;
+    let url = "http://localhost:"+port+"/?name="+paramString;
     let res = await Tweets.ajax("GET", url);
     return JSON.parse(res);
 }

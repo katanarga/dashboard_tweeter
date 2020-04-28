@@ -12,4 +12,8 @@ COPY data /app/data
 
 WORKDIR /app/server
 
-CMD ["python3","server.py"]
+ARG PORT
+
+ENV PORT ${PORT}
+
+CMD ["/bin/sh","-c","python3 server.py ${PORT}"]

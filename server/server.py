@@ -19,12 +19,16 @@ class Server(SimpleHTTPRequestHandler):
         self.df_tweets = pd.read_csv('../data/tweets.csv',encoding='utf8')
         self.folder_client="../client"
         super().__init__(request,client_adress,server)
+        with open(self.folder_client+"/param.js","w") as param_file:
+            param_file.write(f"let port={port};")
 
     def do_GET(self):
         if self.path=="/":
             file_name="index.html"
         elif self.path=="/init.js":
             file_name="init.js"
+        elif self.path=="/param.js":
+            file_name="param.js"
         elif self.path=="/charts.js":
             file_name="charts.js"
         elif self.path=="/ajax.js":
@@ -85,11 +89,14 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
 if __name__=="__main__":
     try:
-        PORT=8000
-        httpd=ThreadedHTTPServer(("",PORT),Server)
-        print("Server started at port 8000")
-        while 1:
-            httpd.handle_request()
+        if len(sys.argv)!=2:
+            print("Usage : python3 server.py port")
+        else:
+            port=int(sys.argv[1])
+            httpd=ThreadedHTTPServer(("",port),Server)
+            print(f"Server started at port {port}")
+            while True:
+                httpd.handle_request()
     except KeyboardInterrupt:
         print("\nKeyboard Interrupted. Server shutdown.")
         try:
