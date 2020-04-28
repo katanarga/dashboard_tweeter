@@ -16,9 +16,14 @@ window.addEventListener("load",function () {
             text_nb_tweets="<h2>Nombre de tweets contenant la chaine '"+search_bar.value+
             "' : <span id='nb_tweets' style='font-size:800%;color:white'>0</span></h2>";
         }
-        else{
+        else if(document.getElementById("radio_user_name").checked){
             resTweets=await Tweets.search_name(search_bar.value);
             text_nb_tweets="<h2>Nombre de tweets écrits par un utilisateur dont le nom contient la chaine '"+search_bar.value+
+            "' : <span id='nb_tweets' style='font-size:800%;color:white'>0</span></h2>";
+        }
+        else{
+            resTweets=await Tweets.search_htag(search_bar.value);
+            text_nb_tweets="<h2>Nombre de tweets écrits par un utilisateur dont le hashtag contient la chaine '"+search_bar.value+
             "' : <span id='nb_tweets' style='font-size:800%;color:white'>0</span></h2>";
         }
         let tts = JSON.parse(resTweets);

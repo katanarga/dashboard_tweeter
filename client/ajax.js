@@ -51,3 +51,20 @@ Tweets.search_name = async function (str) {
     let res = Tweets.query_name(str);
     return res;
 }
+
+Tweets.query_htag = async function (params) {
+    let paramString = "";
+    for (let p in params) {
+        if (params.hasOwnProperty (p)) {
+            paramString += encodeURIComponent(params[p]);
+        };
+    };
+    let url = "http://localhost:"+port+"/?tag="+paramString;
+    let res = await Tweets.ajax("GET", url);
+    return JSON.parse(res);
+}
+
+Tweets.search_htag = async function (str) {
+    let res = Tweets.query_htag(str);
+    return res;
+}

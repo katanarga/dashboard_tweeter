@@ -59,6 +59,18 @@ class Server(SimpleHTTPRequestHandler):
             with open("response.json","rb") as f:
                 self.wfile.write(f.read())
             return None
+        elif self.path.startswith("/?tag="):
+            file_name="index.html"
+            hashtag=self.path[6:]
+            df_json=self.search_tweets_by_hashtag(hashtag)
+            self.send_response(200)
+            self.send_header("Content-type","application/json")
+            self.end_headers()
+            with open("response.json","w") as f:
+                f.write(json.dumps(df_json))
+            with open("response.json","rb") as f:
+                self.wfile.write(f.read())
+            return None
         else:
             file_name="error.html"
         f=open(f"{self.folder_client}/{file_name}","rb")
@@ -83,6 +95,14 @@ class Server(SimpleHTTPRequestHandler):
         uname_data=self.df_tweets.loc[self.df_tweets['user_name'].astype(str).str.contains(uname)].reset_index(drop=True)
         uname_js=uname_data.to_json(orient="index",force_ascii=False)
         return uname_js
+    
+    def search_tweets_by_hashtag(self,hashtag):
+        if (hashtag != ""):
+            hashtag_data=self.df_tweets.loc[(self.df_tweets['hashtag_0'].astype(str).str.contains(hashtag))|
+                            (self.df_tweets['hashtag_1'].astype(str).str.contains(hashtag))|
+                            (self.df_tweets['hashtag_2'].astype(str).str.contains(hashtag))].reset_index(drop=True)
+        hash_js=hashtag_data.to_json(orient="index",force_ascii=False)
+        return hash_js
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Handle requests in a separate thread."""
