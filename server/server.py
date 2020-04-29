@@ -35,34 +35,16 @@ class Server(SimpleHTTPRequestHandler):
             file_name="ajax.js"
         elif self.path=="/world_map.svg":
             file_name="world_map.svg"
-        elif self.path.startswith("/?text="):
-            file_name="index.html"
-            text=self.path[7:]
-            df_json=self.search_tweets_by_text(text)
-            self.send_response(200)
-            self.send_header("Content-type","application/json")
-            self.end_headers()
-            with open("response.json","w") as f:
-                f.write(json.dumps(df_json))
-            with open("response.json","rb") as f:
-                self.wfile.write(f.read())
-            return None
-        elif self.path.startswith("/?name="):
-            file_name="index.html"
-            uname=self.path[7:]
-            df_json=self.search_tweets_by_uname(uname)
-            self.send_response(200)
-            self.send_header("Content-type","application/json")
-            self.end_headers()
-            with open("response.json","w") as f:
-                f.write(json.dumps(df_json))
-            with open("response.json","rb") as f:
-                self.wfile.write(f.read())
-            return None
-        elif self.path.startswith("/?tag="):
-            file_name="index.html"
-            hashtag=self.path[6:]
-            df_json=self.search_tweets_by_hashtag(hashtag)
+        elif any([self.path.startswith(f"/?{param}=") for param in ("text","name","tag")]):
+            if self.path.startswith("/?text="):
+                text=self.path[7:]
+                df_json=self.search_tweets_by_text(text)
+            elif self.path.startswith("/?name="):
+                uname=self.path[7:]
+                df_json=self.search_tweets_by_uname(uname)
+            else:
+                hashtag=self.path[6:]
+                df_json=self.search_tweets_by_hashtag(hashtag)
             self.send_response(200)
             self.send_header("Content-type","application/json")
             self.end_headers()

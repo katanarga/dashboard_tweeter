@@ -23,7 +23,7 @@ window.addEventListener("load",function () {
         }
         else{
             resTweets=await Tweets.search_htag(search_bar.value);
-            text_nb_tweets="<h2>Nombre de tweets écrits par un utilisateur dont le hashtag contient la chaine '"+search_bar.value+
+            text_nb_tweets="<h2>Nombre de tweets écrits avec un hashtag qui contient la chaine '"+search_bar.value+
             "' : <span id='nb_tweets' style='font-size:800%;color:white'>0</span></h2>";
         }
         let tts = JSON.parse(resTweets);
