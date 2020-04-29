@@ -99,6 +99,8 @@ if __name__=="__main__":
             print(f"Server started at port {port}")
             while True:
                 httpd.handle_request()
+    except ValueError:
+        print(f"The port number '{sys.argv[1]}' is incorrect")
     except KeyboardInterrupt:
         print("\nKeyboard Interrupted. Server shutdown.")
         try:
