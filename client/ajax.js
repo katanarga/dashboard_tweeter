@@ -42,7 +42,7 @@ Tweets.query_name = async function (params) {
             paramString += encodeURIComponent(params[p]);
         };
     };
-    let url = "http://localhost:"+port+"/?name="+paramString;
+    let url = "http://localhost:"+port+"/?user_name="+paramString;
     let res = await Tweets.ajax("GET", url);
     return JSON.parse(res);
 }
@@ -59,7 +59,7 @@ Tweets.query_htag = async function (params) {
             paramString += encodeURIComponent(params[p]);
         };
     };
-    let url = "http://localhost:"+port+"/?tag="+paramString;
+    let url = "http://localhost:"+port+"/?hashtag="+paramString;
     let res = await Tweets.ajax("GET", url);
     return JSON.parse(res);
 }

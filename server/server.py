@@ -8,6 +8,9 @@ import json
 import os
 import sys
 
+class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
+    """Handle requests in a separate thread."""
+
 class Server(SimpleHTTPRequestHandler):
     timeout = 60 # seconde
 
@@ -18,33 +21,25 @@ class Server(SimpleHTTPRequestHandler):
     def __init__(self,request,client_adress,server):
         self.df_tweets = pd.read_csv('../data/tweets.csv',encoding='utf8')
         self.folder_client="../client"
+        self.path_static_files=["/","/init.js","/param.js","/charts.js","/ajax.js","/world_map.svg"]
+        self.params_url=["text","user_name","hashtag"]
         super().__init__(request,client_adress,server)
         with open(self.folder_client+"/param.js","w") as param_file:
             param_file.write(f"let port={port};")
 
     def do_GET(self):
-        if self.path=="/":
-            file_name="index.html"
-        elif self.path=="/init.js":
-            file_name="init.js"
-        elif self.path=="/param.js":
-            file_name="param.js"
-        elif self.path=="/charts.js":
-            file_name="charts.js"
-        elif self.path=="/ajax.js":
-            file_name="ajax.js"
-        elif self.path=="/world_map.svg":
-            file_name="world_map.svg"
-        elif any([self.path.startswith(f"/?{param}=") for param in ("text","name","tag")]):
-            if self.path.startswith("/?text="):
-                text=self.path[7:]
-                df_json=self.search_tweets_by_text(text)
-            elif self.path.startswith("/?name="):
-                uname=self.path[7:]
-                df_json=self.search_tweets_by_uname(uname)
+        if self.path in self.path_static_files: #return a static file
+            if self.path=="/":
+                file_name="index.html"
             else:
-                hashtag=self.path[6:]
-                df_json=self.search_tweets_by_hashtag(hashtag)
+                file_name=self.path[1:]
+        elif any([self.path.startswith(f"/?{param}=") for param in self.params_url]):
+            # search
+            param=self.path[self.path.index("=")+1:]
+            filter_type=self.path[2:self.path.index("=")]
+            print("filter ",filter_type," ",param)
+            df_json=self.search_tweets_by_filter(filter_type,param)
+            print("df_json",df_json[:100])
             self.send_response(200)
             self.send_header("Content-type","application/json")
             self.end_headers()
@@ -53,8 +48,9 @@ class Server(SimpleHTTPRequestHandler):
             with open("response.json","rb") as f:
                 self.wfile.write(f.read())
             return None
-        else:
+        else: # incorrect url 
             file_name="error.html"
+
         f=open(f"{self.folder_client}/{file_name}","rb")
         self.send_response(200)
         if file_name[-2:]=="js":
@@ -68,26 +64,15 @@ class Server(SimpleHTTPRequestHandler):
         f.close()
         print("Handle by thread",threading.currentThread().getName())
 
-    def search_tweets_by_text(self,text):
-        text_data=self.df_tweets.loc[self.df_tweets['text'].astype(str).str.contains(text)].reset_index(drop=True)
-        text_js=text_data.to_json(orient="index",force_ascii=False)
-        return text_js
-    
-    def search_tweets_by_uname(self,uname):
-        uname_data=self.df_tweets.loc[self.df_tweets['user_name'].astype(str).str.contains(uname)].reset_index(drop=True)
-        uname_js=uname_data.to_json(orient="index",force_ascii=False)
-        return uname_js
-    
-    def search_tweets_by_hashtag(self,hashtag):
-        if (hashtag != ""):
-            hashtag_data=self.df_tweets.loc[(self.df_tweets['hashtag_0'].astype(str).str.contains(hashtag))|
-                            (self.df_tweets['hashtag_1'].astype(str).str.contains(hashtag))|
-                            (self.df_tweets['hashtag_2'].astype(str).str.contains(hashtag))].reset_index(drop=True)
-        hash_js=hashtag_data.to_json(orient="index",force_ascii=False)
-        return hash_js
-
-class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
-    """Handle requests in a separate thread."""
+    def search_tweets_by_filter(self,filter_type,param):
+        if filter_type=="text" or filter_type=="user_name":
+            df=self.df_tweets.loc[self.df_tweets[filter_type].astype(str).str.contains(param)].reset_index(drop=True)
+        elif filter_type=="hashtag":
+            df=self.df_tweets.loc[(self.df_tweets['hashtag_0'].astype(str).str.contains(param)) |
+                (self.df_tweets['hashtag_1'].astype(str).str.contains(param)) |
+                (self.df_tweets['hashtag_2'].astype(str).str.contains(param))].reset_index(drop=True)   
+        df_json=df.to_json(orient="index",force_ascii=False)
+        return df_json
 
 if __name__=="__main__":
     try:
@@ -103,7 +88,3 @@ if __name__=="__main__":
         print(f"The port number '{sys.argv[1]}' is incorrect")
     except KeyboardInterrupt:
         print("\nKeyboard Interrupted. Server shutdown.")
-        try:
-            sys.exit(0)
-        except SystemExit:
-            os._exit(0)
