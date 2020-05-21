@@ -7,16 +7,12 @@ import threading
 import json
 import os
 import sys
+import time
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Handle requests in a separate thread."""
 
 class Server(SimpleHTTPRequestHandler):
-    timeout = 60 # seconde
-
-    def setup(self):
-        self.request.settimeout(self.timeout)
-        SimpleHTTPRequestHandler.setup(self)
 
     def __init__(self,request,client_adress,server):
         self.df_tweets = pd.read_csv('../data/tweets.csv',encoding='utf8')
@@ -37,9 +33,7 @@ class Server(SimpleHTTPRequestHandler):
             # search
             param=self.path[self.path.index("=")+1:]
             filter_type=self.path[2:self.path.index("=")]
-            print("filter ",filter_type," ",param)
             df_json=self.search_tweets_by_filter(filter_type,param)
-            print("df_json",df_json[:100])
             self.send_response(200)
             self.send_header("Content-type","application/json")
             self.end_headers()
@@ -75,16 +69,16 @@ class Server(SimpleHTTPRequestHandler):
         return df_json
 
 if __name__=="__main__":
-    try:
-        if len(sys.argv)!=2:
+    if len(sys.argv)!=2:
             print("Usage : python3 server.py port")
-        else:
+    else:
+        try:
             port=int(sys.argv[1])
             httpd=ThreadedHTTPServer(("",port),Server)
             print(f"Server started at port {port}")
             while True:
                 httpd.handle_request()
-    except ValueError:
-        print(f"The port number '{sys.argv[1]}' is incorrect")
-    except KeyboardInterrupt:
-        print("\nKeyboard Interrupted. Server shutdown.")
+        except ValueError:
+            print(f"The port number '{sys.argv[1]}' is incorrect")
+        except KeyboardInterrupt:
+            print("\nKeyboard Interrupted. Server shutdown.")

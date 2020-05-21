@@ -4,11 +4,39 @@ window.addEventListener("load",function () {
     let div_results = document.getElementById("div_results");
     let text_nb_tweets="";
     let interval=[];
+    let nb_searchs=0;
+
+    function blink_nb_tweets(){ 
+        if (text_nb_tweets.style.visibility=='visible'){ 
+            text_nb_tweets.style.visibility='hidden'; 
+        } 
+        else{ 
+            text_nb_tweets.style.visibility='visible'; 
+        }
+     }; 
+    function refresh_text_nb_tweets(nb_tweets,cnt_searchs){
+        let x=0;
+        let f=function(){
+            if(nb_searchs==cnt_searchs){
+                text_nb_tweets.innerHTML=x;
+                if(x<nb_tweets){
+                    x++;
+                    setTimeout(f,3000/nb_tweets);
+                }
+                else{
+                    interval.push(setInterval(blink_nb_tweets,800)); 
+                }
+            }
+        };
+        setTimeout(f,3000/nb_tweets);
+    }
 
     btn_search.addEventListener("click",async function (ev) {
+        nb_searchs++;
         if(interval.length>0){
             clearInterval(interval.pop());
         }
+        let nb_tweets=0;
         btn_search.disabled = "disabled";
         let resTweets="";
         if(document.getElementById("radio_text").checked){
@@ -27,7 +55,6 @@ window.addEventListener("load",function () {
             "' : <span id='nb_tweets' style='font-size:800%;color:white'>0</span></h2>";
         }
         let tts = JSON.parse(resTweets);
-        let nb_tweets=0;
         let div_content="<div style='clear:both;background-color:white'>";
         let map_places=new Map();
         let map_hashtags=new Map();
@@ -103,29 +130,6 @@ window.addEventListener("load",function () {
         }
         btn_search.disabled="";
         text_nb_tweets=document.getElementById("nb_tweets");
-        refresh_text_nb_tweets(nb_tweets);
+        refresh_text_nb_tweets(nb_tweets,nb_searchs);
     });
-    function blink_nb_tweets(){ 
-        if (text_nb_tweets.style.visibility=='visible'){ 
-            text_nb_tweets.style.visibility='hidden'; 
-        } 
-        else{ 
-            text_nb_tweets.style.visibility='visible'; 
-        }
-     }; 
-    
-    function refresh_text_nb_tweets(nb_tweets){
-        let x=0;
-        let f=function(){
-            text_nb_tweets.innerHTML=x;
-            if(x<nb_tweets){
-                x++;
-                setTimeout(f,3000/nb_tweets);
-            }
-            else{
-                interval.push(setInterval(blink_nb_tweets,800)); 
-            }
-        };
-        setTimeout(f,3000/nb_tweets);
-    }
 });
