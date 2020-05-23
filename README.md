@@ -4,8 +4,9 @@ L'application a été développée en python et en javascript et est conteneuris
 ## Installation
 
 ### Pré-requis
-Installez Docker sur votre machine.
+Installez Docker et `python3.7` sur votre machine.
 
+## Utilisation
 1. Clonez le dépot avec la commande __git clone https://github.com/katanarga/dashboard_tweeter.git__ .
 
 2. Dans le dossier dashboard_tweeter, construisez l'image Docker avec la commande __docker build --build-arg PORT=XXXX -t dashboard_twitter .__
