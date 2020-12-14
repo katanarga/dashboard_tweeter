@@ -1,4 +1,4 @@
-Ce projet consiste à développer un dashboard à partir d'un fichier CSV contenant des tweets.
+Caae projet consiste à développer un dashboard à partir d'un fichier CSV contenant des tweets.
 L'application a été développée en python et en javascript et est conteneurisée avec Docker.
 
 ## Installation
